@@ -7,7 +7,7 @@ data = open('C:\\Users\\ppsmith\\Desktop\\AustraliaColoring.txt', 'r')
 data = data.readlines()
 
 #colors will contain the colors provided, nodes will be a list of nodes provided
-colors = []
+colors = {}
 nodes = {}
 
 set = 0
@@ -17,7 +17,7 @@ set = 0
 for entry in data:
     if entry != '\n' and set == 0:
         entry = entry.strip('\n')
-        colors.append(entry)
+        colors[entry] = entry;
         continue
     elif entry == '\n' and set == 0:  # if we encounter blank line, we know we are done with the colors and can move on to the nodes.
         set = 1
@@ -41,13 +41,6 @@ for entry in data:
         node1 = nodes[tmpoNode2]
         node0.addNeighbors(node1)
 
-
-for key in nodes:
-    print('Name: ' + nodes[key].getName())
-    print(list(nodes[key].getNeighbors()))
-    print('\n')
-
-
 root = nodes[next(iter(nodes))]
 
 while not root.hasNeightbors():
@@ -55,30 +48,60 @@ while not root.hasNeightbors():
     root.setColor(colors[1])
 tmp = root
 
-maxCount = 0;
-maxKey = '';
+maxCount = 0
+maxKey = ''
 for key in nodes:
-    neighbors = len(nodes[key].getNeighbors());
+    neighbors = len(nodes[key].getNeighbors())
     if neighbors > maxCount:
-        maxCount = neighbors;
+        maxCount = neighbors
         maxKey = key
 
 root = nodes[maxKey]
+previous = []
+newColor = ''
 
 print('Max root: ' + root.getName())
 
-tmp = root
+tmp = root  #tmp is a node
+tmp.setColor(colors[next(iter(colors))])
+tmp.setColored(1)
+tmp.addToCannotColor(tmp.getColor())
+tmp.setSeen(1)
+for key in tmp.getNeighbors():
+    tmp.getNeighbors()[key].addToCannotColor(tmp.getColor())
 
-previous = [];
 
-while nodes[tmp].hasNeightbors():
-    previous.append(nodes[tmp])
-    iterable = iter(nodes[tmp].getNeighbors())
-    nodes[tmp] = nodes[next(iterable)]
-    if(nodes[tmp].numberBlack == len(nodes[tmp].getNeighbors())):
-        nodes[tmp].setColor(colors[1])
-    else:
-        usedColor = nodes[tmp].getFirstNonBlack().getColor();
+while tmp.hasUnexploredNeighbors():  #while the node has neighbors that have not been seen
+    try:
+        previous.append(tmp)  #append the node to the list of previous nodes
+        key = iter(tmp.getNeighbors())  #create an iterable over the keys
+        tmp = nodes[next(key)]  #new node is the first node in the neightbors list
+
+        colorTestIter = iter(colors)  #create an iterator over the colors dict.
+        testColor = tmp.getCannotColor()  #get dict. of uincolorable colors
+        i = 0
+        while i < len(colors.keys()):  #while there are colors to look at
+            nextKey = next(colorTestIter)
+            i = i + 1
+            if not nextKey in testColor:
+                tmp.setColor(colors[nextKey])
+                tmp.addToCannotColor(tmp.getColor())
+                tmp.setColored(1)
+                for key in tmp.getNeighbors():
+                    tmp.getNeighbors()[key].addToCannotColor(tmp.getColor())
+                continue
+            continue
+        tmp = previous.pop()
+        continue
+    except:
+        for key in nodes:
+            print('Name: ' + nodes[key].getName())
+            print(nodes[key].getColor())
+            print('\n')
+
+
+
+
 
 
 

@@ -8,9 +8,12 @@
 class Node:
     #constructor
     def __init__(self, name):
-        self.name = name;
-        self.neighbors = {}
-        self.color = 'black'
+        self.name = name  #name of the node
+        self.neighbors = {}  #list of children
+        self.color = 'black'  #starting color of the node
+        self.seen = 0  #if the node has been seen
+        self.cannotColor = {}
+        self.colored = 0
 
     #adds the 'node' to this node's list of neighbors
     def addNeighbors(self, node):
@@ -21,6 +24,12 @@ class Node:
     #returns the name of the node
     def getName(self):
         return self.name
+
+    def getSeen(self):
+        return self.seen
+
+    def setSeen(self, seen):
+        self.seen = seen
 
     #set the color of the node
     def setColor(self, color):
@@ -43,14 +52,38 @@ class Node:
     def numberBlack(self):
         count = 0
         for key in self.neighbors:
-            if neighbors[key].getColor() == 'black':
+            if self.neighbors[key].getColor() == 'black':
                 count = count + 1
         return count
 
     def getFirstNonBlack(self):
         for key in self.neighbors:
-            if nodes[key].getColor() != 'black':
-                return nodes[key];
+            if self.neighbors[key].getColor() != 'black':
+                return self.neighbors[key]
+
+    def addToCannotColor(self, color):
+        self.cannotColor[color] = color
+
+    def removeFromCannotColor(self, color):
+        self.cannotColor[color] = color
+
+    def getCannotColor(self):
+        return self.cannotColor
+
+    def hasUnexploredNeighbors(self):
+        for key in self.neighbors:
+            if not self.neighbors[key].getSeen():
+                return 1
+        return 0
+
+    def getColored(self):
+        return self.colored
+
+    def setColored(self, num):
+        self.colored = num
+
+
+
 
 
 
