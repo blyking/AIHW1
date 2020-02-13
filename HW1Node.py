@@ -65,19 +65,27 @@ class Node:
         self.cannotColor[color] = color
 
     def removeFromCannotColor(self, color):
-        self.cannotColor[color] = color
+        for key in self.neighbors:
+            garbage = self.neighbors[key].getCannotColor().pop(color)
+        return
 
     def getCannotColor(self):
         return self.cannotColor
 
+    def getColored(self):
+        return self.colored
+
     def hasUnexploredNeighbors(self):
         for key in self.neighbors:
-            if not self.neighbors[key].getSeen():
+            if not self.neighbors[key].getColored():
                 return 1
         return 0
 
-    def getColored(self):
-        return self.colored
+    def getNextUnexplored(self):
+        for key in self.neighbors:
+            if 1 != self.neighbors[key].getColored():
+                return self.neighbors[key]
+        return 0
 
     def setColored(self, num):
         self.colored = num
