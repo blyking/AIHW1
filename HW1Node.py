@@ -14,12 +14,17 @@ class Node:
         self.seen = 0  #if the node has been seen
         self.cannotColor = {}
         self.colored = 0
+        self.prevColors = {}  #list of previous colors
 
     #adds the 'node' to this node's list of neighbors
     def addNeighbors(self, node):
         if not (node.getName() in self.neighbors):  #check to ensure neighbor not already on the list
             self.neighbors[node.getName()] = node  # add the node to the neighbors list
             node.addNeighbors(self)  # add this node to the other nodes neighbors list
+        return
+
+    def getPrevColors(self):
+        return self.prevColors
 
     #returns the name of the node
     def getName(self):
@@ -61,6 +66,9 @@ class Node:
             if self.neighbors[key].getColor() != 'black':
                 return self.neighbors[key]
 
+    def addToPrevColor(self, color):
+        self.prevColors[color] = color
+
     def addToCannotColor(self, color):
         self.cannotColor[color] = color
 
@@ -68,6 +76,9 @@ class Node:
         for key in self.neighbors:
             garbage = self.neighbors[key].getCannotColor().pop(color)
         return
+
+    def removeFromPreviousColor(self, color):
+        self.prevColors.pop(color)
 
     def getCannotColor(self):
         return self.cannotColor

@@ -1,4 +1,5 @@
 import HW1Node
+import sys
 
 def printState():  #prints relevant information about the state of the search
     for key in nodes:
@@ -57,18 +58,16 @@ def backTrack(tmp):  #does a backtracking search. Starts with most constrsined n
         tmp.removeFromCannotColor(tmp.getColor())  #removes the color from neighbors cannotColor lists
         tmp.setColor('black')  #reset color
         tmp.setColored(0)  #no longer colored
-        #tmp.getCannotColor()
         tmp = previous.pop()  #backup and try again
         backTrack(tmp)
         return
     return
 
 #local location of input, need to change so it reads from command line
-data = open('C:\\Users\\ppsmith\\Desktop\\AustraliaColoring.txt', 'r')
+data = open(input('Please give file path'), 'r')
 
 #open and read the data
 data = data.readlines()
-
 #colors will contain the colors provided, nodes will be a list of nodes provided
 colors = {}
 nodes = {}
@@ -138,14 +137,3 @@ for key in nodes:
 
 backTrack(tmp)
 printState()
-
-
-
-
-
-
-
-
-
-
-
