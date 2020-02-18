@@ -101,6 +101,18 @@ class Node:
     def setColored(self, num):
         self.colored = num
 
+    def getMostConstrainedNeighbor(self):
+        max = 0
+        maxNode = self
+        for key in self.neighbors:
+            if(len(self.neighbors[key].getNeighbors()) > max) and not self.neighbors[key].getColored():
+                max = len(self.neighbors[key].getNeighbors())
+                maxNode = self.neighbors[key]
+        if maxNode == self:
+            return None
+        else:
+            return maxNode
+
 
 
 
