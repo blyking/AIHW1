@@ -86,15 +86,14 @@ data = open(input('Please give file path'), 'r')
 #open and read the data
 data = data.readlines()
 #colors will contain the colors provided, nodes will be a list of nodes provided
-colors = {}
-nodes = {}
-unColoredNodes = []
-steps = 0
-
-set = 0
+colors = {}  #used to hold possible colors
+nodes = {}  #used to hold nodes
+unColoredNodes = []  #list of un-colored nodes
+steps = 0  #total calls to backTrack()
+set = 0  #used by parser
 
 #for each line the data, do the following. This the parser. The parser produces a list of colors, dictionary of nodes, and intializes the properties of each node.
-#set counts the number of black lines that we haves seen. Creates seperation between the input parts.
+#set count the number of black lines that we haves seen. Creates seperation between the input parts.
 for entry in data:
     if entry != '\n' and set == 0:
         entry = entry.strip('\n')
@@ -106,7 +105,7 @@ for entry in data:
 
     if entry != '\n' and set == 1:
         entry = entry.strip('\n')
-        nodes[entry] = HW1Node.Node(entry)  #creates a new node in the nodes dictionary and intializes that nodes name. The key in the dictionart is the name of the node
+        nodes[entry] = HW1Node.Node(entry)  #creates a new node in the nodes dictionary and initializes that nodes name. The key in the dictionary is the name of the node
         continue
     elif entry == '\n' and set == 1:
         set = 2
@@ -120,18 +119,16 @@ for entry in data:
         tmpoNode2 = entry[1]
         node0 = nodes[tmpNode]
         node1 = nodes[tmpoNode2]
-        node0.addNeighbors(node1)
-
-root = nodes[next(iter(nodes))]
+        node0.addNeighbors(node1)  #this method works on both nodes. For example WA SA will add WA to SA neighbors list, and add SA to WA neighbors list
 
 for key in nodes:
     if(len(nodes[key].getNeighbors()) == 0):
         nodes[key].setColor(colors[next(iter(colors))])
 
-tmp = root
-
 maxCount = 0
 maxKey = ''
+
+#finds the most constrained node
 for key in nodes:
     neighbors = len(nodes[key].getNeighbors())
     if neighbors > maxCount:
@@ -142,16 +139,19 @@ root = nodes[maxKey]
 previous = []
 newColor = ''
 
-#print('Max root: ' + root.getName())
-
 tmp = root  #tmp is a node
 
+#will show nodes and their neighbors
 #for key in nodes:
 #    print(f"{nodes[key].getName()}'s neighbors are {nodes[key].getNeighbors().keys()}")
 #print('\n')
 
+#add nodes to uncolored nodes list
 for key in nodes:
     unColoredNodes.append(nodes[key])
 
+#do backtracking search
 backTrack(tmp, steps)
+
+#print result
 printState()
