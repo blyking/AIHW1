@@ -154,4 +154,5 @@ for key in nodes:
 backTrack(tmp, steps)
 
 #print result
+print("Print Backtracking Method Results:")
 printState()
