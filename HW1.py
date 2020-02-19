@@ -44,30 +44,30 @@ def backTrack(tmp, steps):  #does a backtracking search. Starts with most constr
 
 
 #//////////////////Code Between Slashes sets the next node to explore as the next most constrained node. This code added 13 steps to the solution, and so was taken out////////////////////////
-                #test = tmp.getMostConstrainedNeighbor()
+                test = tmp.getMostConstrainedNeighbor()
 
-                #if test == None:
-                    #tmp = previous.pop()
-                    #backTrack(tmp, steps)
-                    #return
-                #else:
-                    #previous.append(tmp)
-                    #tmp = test
-                    #backTrack(tmp, steps)
-                    #return
+                if test == None:
+                    tmp = previous.pop()
+                    backTrack(tmp, steps)
+                    return
+                else:
+                    previous.append(tmp)
+                    tmp = test
+                    backTrack(tmp, steps)
+                    return
 #//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-                for keys in tmp.getNeighbors():  #if a the node has uncolored neighbors, switch the node to the uncolored node, and call backtrack
-                    if tmp.getNeighbors()[keys].getColored() != 1:
-                        previous.append(tmp)  #the placement of this line is important. If there is not an unseen neightbor, we do not want the current node to be in the previous list.
+                #for keys in tmp.getNeighbors():  #if a the node has uncolored neighbors, switch the node to the uncolored node, and call backtrack
+                 #   if tmp.getNeighbors()[keys].getColored() != 1:
+                  #      previous.append(tmp)  #the placement of this line is important. If there is not an unseen neightbor, we do not want the current node to be in the previous list.
                                               #only add the node to previous once we have a node to move onto
-                        tmp = tmp.getNeighbors()[keys]
-                        backTrack(tmp, steps)
-                        return
-                tmp = previous.pop()  #if there is not a neighbor node that is not colored, back up and look for uncolored nodes in the previous node
-                backTrack(tmp, steps)
-                return
+                   #     tmp = tmp.getNeighbors()[keys]
+                    #    backTrack(tmp, steps)
+                     #   return
+               # tmp = previous.pop()  #if there is not a neighbor node that is not colored, back up and look for uncolored nodes in the previous node
+                #backTrack(tmp, steps)
+                #return
             continue
 
         #uncolor node because current config will not work

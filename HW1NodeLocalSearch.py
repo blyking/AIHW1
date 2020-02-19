@@ -13,6 +13,7 @@ class Node:
         self.color = 'black'  #starting color of the node
         self.seen = 0  #if the node has been seen
         self.cannotColor = {}
+        self.canColor = {}
         self.colored = 0
         self.prevColors = {}  #list of previous colors
 
@@ -25,6 +26,8 @@ class Node:
 
     def getPrevColors(self):
         return self.prevColors
+    def getCanColor(self):
+        return self.canColor
 
     #returns the name of the node
     def getName(self):
@@ -32,6 +35,10 @@ class Node:
 
     def getSeen(self):
         return self.seen
+
+    def addToCanColor(self, color):
+        self.canColor[color] = color
+
 
     def setSeen(self, seen):
         self.seen = seen
@@ -73,9 +80,20 @@ class Node:
         self.cannotColor[color] = color
 
     def removeFromCannotColor(self, color):
+        self.cannotColor.pop(color)
         for key in self.neighbors:
             garbage = self.neighbors[key].getCannotColor().pop(color)
         return
+
+    def removeFromCanColor(self, color):
+        self.canColor.pop(color)
+        #for key in self.neighbors:
+            #garbage = self.neighbors[key].getCanColor().pop(color)
+            #self.neighbors[key].addToCannotColor(color)
+        return
+
+    def resetCannotColor(self):
+        self.cannotColor = {}
 
     def removeFromPreviousColor(self, color):
         self.prevColors.pop(color)

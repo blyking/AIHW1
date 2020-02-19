@@ -6,19 +6,72 @@ def printState():  #prints relevant information about the state of the search
         print(f'Node: {nodes[key].getName()}')
         print(f'{nodes[key].getName()} color {nodes[key].getColor()}')
         print(f'{nodes[key].getName()} cant be colored  with {nodes[key].getCannotColor().keys()}')
+        print(f'{nodes[key].getName()} can be colored with {nodes[key].getCanColor()}' )
     print('\n' + '\n' + '\n')
 
-def getHeuristc():
-    maxLength = 0
+def findProblem():  #finds errors in the random coloring. Returns the first node that errors
+    previous = None
     for key in nodes:
-        if len(nodes[key].getCannotColor()) > maxLength:
-            maxLength = len(nodes[key].getCannotColor())
-            nextNode = nodes[key]
-    return nextNode
+        if nodes[key].getColor() in nodes[key].getCannotColor().keys():
+            return nodes[key]
+    return None
 
-def localSearch(node):
-    nextNode = node.getNeighbors(next(iter(node.getNeighbors())))  #nextNode is the first neighbor
-    nextNode.setColor(next(iter(can)))
+def updateCannotColor(node):
+    node.resetCannotColor()
+    for key in node.getNeighbors():
+        node.addToCannotColor(node.getNeighbors()[key].getColor())
+
+def getConflictNumber(node):
+    startNum = 0
+    for key in node.getNeighbors():  #loop finds the total number of conflicts. Stores in startNum
+        if node.getColor() == node.getNeighbors()[key].getColor():
+            startNum = startNum + 1
+    return startNum
+
+def changeBestColor(node):  #changes the color of the node, such that the total number of conflicts around the node is minimized.
+    startNum = getConflictNumber(node)  #starting number of conflicts for the problem node
+    if startNum == 0:
+        if len(list(node.getCanColor())) > 1:
+            for key in node.getCanColor():
+                if node.getCanColor()[key] != node.getColor():
+                    node.setColor(node.getCanColor()[key])
+                    for key in node.getNeighbors():  # add node to neighbors cannot color list
+                        node.getNeighbors()[key].addToCannotColor(node.getColor())
+        return
+    newNum = startNum
+    i = 0
+    while(startNum <= newNum): #if num new conflicts less, then return. If we have checked every color without reducing, also return
+        #printState()
+        if i > len(list(node.getCanColor())):
+            newNode = node.getNeighbors()[list(node.getNeighbors().keys())[int(random.uniform(0, len(list(node.getNeighbors().keys()))))]]  # jump to one of the nodes neighbors
+            changeBestColor(newNode)  # try to color this node to reduce conflicts
+            updateCannotColor(node)
+            return
+        if len(list(node.getCanColor().keys())) > 0:  #if there are possible colors, color the node one of them, then check conflicts
+            newColor = node.getCanColor()[list(node.getCanColor().keys())[int(random.uniform(0, len(node.getCanColor().keys())))]]
+            oldColor = node.getColor()
+            node.setColor(newColor)  #set color
+            for key in node.getNeighbors():  #add node to neighbors cannot color list
+                node.getNeighbors()[key].addToCannotColor(node.getColor())
+
+            newNum = getConflictNumber(node)  #recalculate number of conflicts.
+            i = i + 1
+        elif(len(list(node.getCannotColor().keys())) == len(colorsList)):  #if the conflict node is totally "locked", then we cannot color it such that the number of conflicts will be reduced, so jump
+            newNode = node.getNeighbors()[list(node.getNeighbors().keys())[int(random.uniform(0, len(list(node.getNeighbors().keys()))))]]  #jump to one of the nodes neighbors
+            print(newNode.getName())
+            changeBestColor(newNode)  #try to color this node to reduce conflicts
+            updateCannotColor(node)
+            return
+    return
+
+def localSearch():
+    node = findProblem()  #see if there is problem in the graph. If there isnt, return
+    while(node != None):  #if there is problem, try to fix it
+        print(node.getName())
+        updateCannotColor(node)
+        changeBestColor(node)
+        node = findProblem()  #if there are now no problems, the function will return
+    return
 
 #local location of input, need to change so it reads from command line
 data = open(input('Please give file path'), 'r')
@@ -76,11 +129,18 @@ for key in nodes:  #want to add nodes color to cannot colors list of neighbors
     for neighbors in nodes[key].getNeighbors():
         nodes[key].getNeighbors()[neighbors].addToCannotColor(nodes[key].getColor())
 
-node = getHeuristc()
+for key in nodes:  #for each node get the nodes neighbors, get
+    for key1 in colors:
+        if key1 not in nodes[key].getCannotColor():
+            nodes[key].addToCanColor(colors[key1])
+
+node = None
+for keys in nodes:
+    if len(nodes[keys].getNeighbors()) == 0: continue
+    node = nodes[keys]
 
 print(len(nextNode.getCannotColor()))
 
-localSearch(node)
-
-
+printState()
+localSearch()
 printState()
