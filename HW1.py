@@ -1,4 +1,4 @@
-import HW1Node
+import HW1NodeBacktrack
 import sys
 
 def printState():  #prints relevant information about the state of the search
@@ -105,7 +105,7 @@ for entry in data:
 
     if entry != '\n' and set == 1:
         entry = entry.strip('\n')
-        nodes[entry] = HW1Node.Node(entry)  #creates a new node in the nodes dictionary and initializes that nodes name. The key in the dictionary is the name of the node
+        nodes[entry] = HW1NodeBacktrack.Node(entry)  #creates a new node in the nodes dictionary and initializes that nodes name. The key in the dictionary is the name of the node
         continue
     elif entry == '\n' and set == 1:
         set = 2
