@@ -29,6 +29,9 @@ class Node:
     def getCanColor(self):
         return self.canColor
 
+    def resetCanColor(self):
+        self.canColor = {}
+
     #returns the name of the node
     def getName(self):
         return self.name

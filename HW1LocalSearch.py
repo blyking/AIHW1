@@ -10,9 +10,8 @@ def printState():  #prints relevant information about the state of the search
     print('\n' + '\n' + '\n')
 
 def findProblem():  #finds errors in the random coloring. Returns the first node that errors
-    previous = None
     for key in nodes:
-        if nodes[key].getColor() in nodes[key].getCannotColor().keys():
+        if getConflictNumber(nodes[key]) > 0:
             return nodes[key]
     return None
 
@@ -20,6 +19,13 @@ def updateCannotColor(node):
     node.resetCannotColor()
     for key in node.getNeighbors():
         node.addToCannotColor(node.getNeighbors()[key].getColor())
+
+def updateCanColor(node):
+    node.resetCanColor()
+    for key in colors:
+        if not key in node.getCannotColor().keys():
+            node.addToCanColor(colors[key])
+
 
 def getConflictNumber(node):
     startNum = 0
@@ -36,7 +42,11 @@ def changeBestColor(node):  #changes the color of the node, such that the total 
                 if node.getCanColor()[key] != node.getColor():
                     node.setColor(node.getCanColor()[key])
                     for key in node.getNeighbors():  # add node to neighbors cannot color list
-                        node.getNeighbors()[key].addToCannotColor(node.getColor())
+                        updateCannotColor(node.getNeighbors()[key])
+                        updateCanColor(node.getNeighbors()[key])
+                break
+        updateCanColor(node)
+        updateCannotColor(node)
         return
     newNum = startNum
     i = 0
@@ -46,13 +56,19 @@ def changeBestColor(node):  #changes the color of the node, such that the total 
             newNode = node.getNeighbors()[list(node.getNeighbors().keys())[int(random.uniform(0, len(list(node.getNeighbors().keys()))))]]  # jump to one of the nodes neighbors
             changeBestColor(newNode)  # try to color this node to reduce conflicts
             updateCannotColor(node)
+            updateCanColor(node)
             return
         if len(list(node.getCanColor().keys())) > 0:  #if there are possible colors, color the node one of them, then check conflicts
             newColor = node.getCanColor()[list(node.getCanColor().keys())[int(random.uniform(0, len(node.getCanColor().keys())))]]
             oldColor = node.getColor()
             node.setColor(newColor)  #set color
+
             for key in node.getNeighbors():  #add node to neighbors cannot color list
-                node.getNeighbors()[key].addToCannotColor(node.getColor())
+                updateCannotColor(node.getNeighbors()[key])
+                updateCanColor(node.getNeighbors()[key])
+
+            updateCannotColor(node)
+            updateCanColor(node)
 
             newNum = getConflictNumber(node)  #recalculate number of conflicts.
             i = i + 1
@@ -61,6 +77,7 @@ def changeBestColor(node):  #changes the color of the node, such that the total 
             print(newNode.getName())
             changeBestColor(newNode)  #try to color this node to reduce conflicts
             updateCannotColor(node)
+            updateCanColor(node)
             return
     return
 
@@ -101,6 +118,7 @@ for entry in data:
     if entry != '\n' and set == 1:
         entry = entry.strip('\n')
         nodes[entry] = HW1NodeLocalSearch.Node(entry)  #creates a new node in the nodes dictionary and initializes that nodes name. The key in the dictionary is the name of the node
+        #nodes[entry].setColor(colorsList[0])
         nodes[entry].setColor(colorsList[int(random.uniform(0, len(colors)))])  #sets nodes initial color to randomnodes
 
     elif entry == '\n' and set == 1:
